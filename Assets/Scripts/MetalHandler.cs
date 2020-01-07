@@ -28,20 +28,34 @@ public class MetalHandler : MonoBehaviour
 
     // setup methods ----------------------------------------------------------------------------------------
 
-    private void setUpInitialMetalObjects()
+    private void setUpInitialMetalObjects(GameObject cur)
     {
         // go through all our metal object children
-        for (int i = 0; i < gameObject.transform.childCount; i++)
+        for (int i = 0; i < cur.transform.childCount; i++)
         {
             // fetch a metal object
-            GameObject metalObj = gameObject.transform.GetChild(i).gameObject;
-            // add a line to it
-            attachLineObject(metalObj);
-            // the static object do not have any rigid bodies as they cannot be moved
-            //attachRigidbody2D(metalObj);
-            // then add it to our list
-            metalObjects.AddLast(metalObj);
+            GameObject metalObj = cur.transform.GetChild(i).gameObject;
+            // se if it's a group, in which case we recursively set up its children
+            if (metalObj.transform.childCount > 0)
+                setUpInitialMetalObjects(metalObj);
+            // otherwise (base case) we set it up
+            else
+            {
+                // add a line to it
+                attachLineObject(metalObj);
+                // the static object do not have any rigid bodies as they cannot be moved
+                //attachRigidbody2D(metalObj);
+                // then add it to our list
+                metalObjects.AddLast(metalObj);
+            }
         }
+        //// also go through all the objects labeled with the tag "Metal"
+        //GameObject[] metObjs = GameObject.FindGameObjectsWithTag("Metal");
+        //foreach (GameObject metObj in metObjs)
+        //{
+        //    attachLineObject(metObj);
+        //    metalObjects.AddLast(metObj);
+        //}
     }
 
     private void attachLineObject(GameObject destinationObj)
@@ -102,7 +116,7 @@ public class MetalHandler : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        setUpInitialMetalObjects();
+        setUpInitialMetalObjects(gameObject);
         // fetch mouse handler
         MOUSE = mouseHandlerObj.transform.GetComponent(typeof(MouseHandler)) as MouseHandler;
     }

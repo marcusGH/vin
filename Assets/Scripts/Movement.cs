@@ -44,11 +44,13 @@ public class Movement : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
+        // we have som min range to avoid flickering from minimal movement
+
         // flip back from pointing left if we start going to the right
-        if (sr.flipX && rb2D.velocity.x > 0)
+        if (sr.flipX && rb2D.velocity.x > 0.2)
             sr.flipX = false;
         // flip if we start going left
-        if (!sr.flipX && rb2D.velocity.x < 0)
+        if (!sr.flipX && rb2D.velocity.x < -0.02)
             sr.flipX = true;
     }
     void FixedUpdate()
